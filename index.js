@@ -34,6 +34,13 @@ function gameAction() {
 	// Get the wizard
 	const wizard = document.querySelector('.wizard');
 
+	// Gravitation
+	let isInAir = player.y + player.height <= gameArea.offsetHeight;
+
+	if (isInAir) {
+		player.y += game.speed;
+	}
+
 	// Controllers for user input
 	if (keys.ArrowUp && player.y > 0) {
 		player.y -= game.speed * game.movingMultiplayer;
