@@ -2,7 +2,9 @@
 const gameStart = document.getElementById('game-start');
 const gameArea = document.getElementById('game-area');
 const gameScore = document.getElementById('game-score');
+const gamePoints = gameScore.querySelector('.points');
 const gameOver = document.getElementById('game-over');
+// Game state variables
 let keys = {};
 let player = {
 	x: 150,
@@ -13,6 +15,9 @@ let player = {
 let game = {
 	speed: 2,
 	movingMultiplayer: 4,
+};
+let scene = {
+	score: 0,
 };
 
 // Listeners
@@ -33,6 +38,12 @@ function startGame() {
 function gameAction() {
 	// Get the wizard
 	const wizard = document.querySelector('.wizard');
+
+	// Increment points
+	scene.score++;
+
+	// Display points
+	gamePoints.textContent = scene.score;
 
 	// Gravitation
 	let isInAir = player.y + player.height <= gameArea.offsetHeight;
