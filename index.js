@@ -4,6 +4,7 @@ const gameArea = document.getElementById('game-area');
 const gameScore = document.getElementById('game-score');
 const gamePoints = gameScore.querySelector('.points');
 const gameOver = document.getElementById('game-over');
+
 // Game state variables
 let keys = {};
 let player = {
@@ -11,10 +12,13 @@ let player = {
 	y: 100,
 	width: 0,
 	height: 0,
+	lastTimeFiredBall: 0,
 };
 let game = {
 	speed: 2,
 	movingMultiplayer: 4,
+	fireBallMultiplayer: 5,
+	fireInterval: 150,
 };
 let scene = {
 	score: 0,
@@ -35,7 +39,7 @@ function startGame() {
 	window.requestAnimationFrame(gameAction);
 }
 
-function gameAction() {
+function gameAction(timestamp) {
 	// Get the wizard
 	const wizard = document.querySelector('.wizard');
 
@@ -52,6 +56,15 @@ function gameAction() {
 		player.y += game.speed;
 	}
 
+	// Shooting
+	if (keys.Space && timestamp - player.lastTimeFiredBall > game.fireInterval) {
+		wizard.classList.add('wizard-fire');
+		showFireBall(player);
+		player.lastTimeFiredBall = timestamp;
+	} else {
+		wizard.classList.remove('wizard-fire');
+	}
+
 	// Controllers for user input
 	if (keys.ArrowUp && player.y > 0) {
 		player.y -= game.speed * game.movingMultiplayer;
@@ -66,8 +79,22 @@ function gameAction() {
 		player.x += game.speed * game.movingMultiplayer;
 	}
 
+	// Moving the wizard
 	wizard.style.top = player.y + 'px';
 	wizard.style.left = player.x + 'px';
+
+	const fireBalls = Array.from(document.querySelectorAll('.fire-ball'));
+	console.log(fireBalls);
+
+	// Moving the fire balls
+	fireBalls.forEach((fb) => {
+		fb.x += game.speed * game.fireBallMultiplayer;
+		fb.style.left = fb.x + 'px';
+
+		if (fb.x + fb.offsetWidth > gameArea.offsetWidth) {
+			fb.parentElement.removeChild(fb);
+		}
+	});
 
 	window.requestAnimationFrame(gameAction);
 }
@@ -81,6 +108,15 @@ function showWizard() {
 
 	player.width = wizard.offsetWidth;
 	player.height = wizard.offsetHeight;
+}
+
+function showFireBall() {
+	const fireBall = document.createElement('div');
+	fireBall.classList.add('fire-ball');
+	fireBall.style.top = player.y + player.height / 3 - 5 + 'px';
+	fireBall.x = player.x + player.width;
+	fireBall.style.left = fireBall.x + 'px';
+	gameArea.appendChild(fireBall);
 }
 
 function onKeyUp(e) {
