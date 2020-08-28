@@ -19,9 +19,11 @@ let game = {
 	movingMultiplayer: 4,
 	fireBallMultiplayer: 5,
 	fireInterval: 150,
+	cloudSpawnInterval: 3000,
 };
 let scene = {
 	score: 0,
+	lastCloudSpawn: 0,
 };
 
 // Listeners
@@ -42,6 +44,7 @@ function startGame() {
 function gameAction(timestamp) {
 	// Get the wizard
 	const wizard = document.querySelector('.wizard');
+	showCloud(timestamp);
 
 	// Increment points
 	scene.score++;
@@ -84,7 +87,7 @@ function gameAction(timestamp) {
 	wizard.style.left = player.x + 'px';
 
 	const fireBalls = Array.from(document.querySelectorAll('.fire-ball'));
-	console.log(fireBalls);
+	const clouds = Array.from(document.querySelectorAll('.cloud'));
 
 	// Moving the fire balls
 	fireBalls.forEach((fb) => {
@@ -93,6 +96,16 @@ function gameAction(timestamp) {
 
 		if (fb.x + fb.offsetWidth > gameArea.offsetWidth) {
 			fb.parentElement.removeChild(fb);
+		}
+	});
+
+	// Moving the clouds
+	clouds.forEach((c) => {
+		c.x -= game.speed;
+		c.style.left = c.x + 'px';
+
+		if (c.x + c.offsetWidth <= 0) {
+			c.parentElement.removeChild(c);
 		}
 	});
 
@@ -117,6 +130,22 @@ function showFireBall() {
 	fireBall.x = player.x + player.width;
 	fireBall.style.left = fireBall.x + 'px';
 	gameArea.appendChild(fireBall);
+}
+
+function showCloud(timestamp) {
+	if (
+		timestamp - scene.lastCloudSpawn >
+		game.cloudSpawnInterval + 20000 * Math.random()
+	) {
+		const cloud = document.createElement('div');
+		cloud.classList.add('cloud');
+		cloud.x = gameArea.offsetWidth - 200;
+		cloud.style.left = cloud.x + 'px';
+		cloud.style.top = (gameArea.offsetHeight - 200) * Math.random() + 'px';
+
+		gameArea.appendChild(cloud);
+		scene.lastCloudSpawn = timestamp;
+	}
 }
 
 function onKeyUp(e) {
