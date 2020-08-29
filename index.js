@@ -20,10 +20,12 @@ let game = {
 	fireBallMultiplayer: 5,
 	fireInterval: 150,
 	cloudSpawnInterval: 3000,
+	bugSpawnInterval: 1000,
 };
 let scene = {
 	score: 0,
 	lastCloudSpawn: 0,
+	lastBugSpawn: 0,
 };
 
 // Listeners
@@ -44,7 +46,12 @@ function startGame() {
 function gameAction(timestamp) {
 	// Get the wizard
 	const wizard = document.querySelector('.wizard');
+
+	// Add clouds
 	showCloud(timestamp);
+
+	// Add bugs
+	showBug(timestamp);
 
 	// Increment points
 	scene.score++;
@@ -88,6 +95,7 @@ function gameAction(timestamp) {
 
 	const fireBalls = Array.from(document.querySelectorAll('.fire-ball'));
 	const clouds = Array.from(document.querySelectorAll('.cloud'));
+	const bugs = Array.from(document.querySelectorAll('.bug'));
 
 	// Moving the fire balls
 	fireBalls.forEach((fb) => {
@@ -106,6 +114,16 @@ function gameAction(timestamp) {
 
 		if (c.x + c.offsetWidth <= 0) {
 			c.parentElement.removeChild(c);
+		}
+	});
+
+	// Moving the bugs
+	bugs.forEach((b) => {
+		b.x -= game.speed * 3;
+		b.style.left = b.x + 'px';
+
+		if (b.x + b.offsetWidth <= 0) {
+			b.parentElement.removeChild(b);
 		}
 	});
 
@@ -145,6 +163,22 @@ function showCloud(timestamp) {
 
 		gameArea.appendChild(cloud);
 		scene.lastCloudSpawn = timestamp;
+	}
+}
+
+function showBug(timestamp) {
+	if (
+		timestamp - scene.lastBugSpawn >
+		game.bugSpawnInterval + 5000 * Math.random()
+	) {
+		let bug = document.createElement('div');
+		bug.classList.add('bug');
+		bug.x = gameArea.offsetWidth - 60;
+		bug.style.left = bug.x + 'px';
+		bug.style.top = (gameArea.offsetHeight - 60) * Math.random() + 'px';
+
+		gameArea.appendChild(bug);
+		scene.lastBugSpawn = timestamp;
 	}
 }
 
