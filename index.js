@@ -26,6 +26,7 @@ let scene = {
 	score: 0,
 	lastCloudSpawn: 0,
 	lastBugSpawn: 0,
+	isActive: true,
 };
 
 // Listeners
@@ -125,9 +126,15 @@ function gameAction(timestamp) {
 		if (b.x + b.offsetWidth <= 0) {
 			b.parentElement.removeChild(b);
 		}
+
+		if (isCollision(wizard, b)) {
+			gameOverAction();
+		}
 	});
 
-	window.requestAnimationFrame(gameAction);
+	if (scene.isActive) {
+		window.requestAnimationFrame(gameAction);
+	}
 }
 
 function showWizard() {
@@ -180,6 +187,23 @@ function showBug(timestamp) {
 		gameArea.appendChild(bug);
 		scene.lastBugSpawn = timestamp;
 	}
+}
+
+function isCollision(firstElement, secondElement) {
+	let rectOne = firstElement.getBoundingClientRect();
+	let rectTwo = secondElement.getBoundingClientRect();
+
+	return !(
+		rectOne.top > rectTwo.bottom ||
+		rectOne.bottom < rectTwo.top ||
+		rectOne.right < rectTwo.left ||
+		rectOne.left > rectTwo.right
+	);
+}
+
+function gameOverAction() {
+	scene.isActive = false;
+	gameOver.classList.remove('hide');
 }
 
 function onKeyUp(e) {
