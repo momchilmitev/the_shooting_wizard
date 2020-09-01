@@ -130,6 +130,13 @@ function gameAction(timestamp) {
 		if (isCollision(wizard, b)) {
 			gameOverAction();
 		}
+
+		fireBalls.forEach((fb) => {
+			if (isCollision(fb, b)) {
+				b.parentElement.removeChild(b);
+				fb.parentElement.removeChild(fb);
+			}
+		});
 	});
 
 	if (scene.isActive) {
